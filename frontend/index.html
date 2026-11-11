@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Bầu Cử Phi Tập Trung (D-Voting)</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Ethers.js v6 CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+</head>
+<body class="bg-light">
+
+    <!-- Thanh điều hướng (Navbar) & Trang chủ -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">🗳️ D-Voting System</a>
+            <div class="d-flex align-items-center">
+                <span id="networkBadge" class="badge bg-secondary me-2">Chưa kết nối</span>
+                <button id="btnConnect" class="btn btn-outline-light btn-sm" onclick="connectWallet()">
+                    Kết nối MetaMask
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Trang chủ / Header Banner -->
+    <header class="py-4 bg-white border-bottom mb-4">
+        <div class="container text-center">
+            <h1 class="display-6 fw-bold">Hệ Thống Bỏ Phiếu Blockchain</h1>
+            <p class="text-muted">Minh bạch - Bảo mật - Không thể sửa đổi dữ liệu</p>
+            <div id="walletInfo" class="text-primary font-monospace fw-semibold"></div>
+        </div>
+    </header>
+
+    <!-- Nội dung chính -->
+    <main class="container mb-5">
+        <div class="row g-4">
+            
+            <!-- 1. Danh sách Cuộc bầu cử & Ứng viên -->
+            <section class="col-lg-7">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">📋 Danh sách cuộc bầu cử & Ứng viên</h5>
+                        <button class="btn btn-sm btn-light" onclick="loadElections()">Làm mới</button>
+                    </div>
+                    <div class="card-body" id="electionsList">
+                        <div class="text-center py-4 text-muted">Vui lòng kết nối ví MetaMask để tải dữ liệu...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Giao diện Bỏ phiếu & Hiển thị Kết quả -->
+            <section class="col-lg-5">
+                <!-- Form Bỏ phiếu -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">🗳️ Thực hiện bỏ phiếu</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="votingForm" onsubmit="handleVote(event)">
+                            <div class="mb-3">
+                                <label class="form-label font-weight-bold">Chọn cuộc bầu cử:</label>
+                                <select id="selectElection" class="form-select" onchange="onElectionSelectChange()"></select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label font-weight-bold">Chọn ứng viên:</label>
+                                <select id="selectCandidate" class="form-select"></select>
+                            </div>
+                            <button type="submit" id="btnVote" class="btn btn-success w-100" disabled>
+                                Xác nhận bỏ phiếu
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Hiển thị Kết quả -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">📊 Kết quả bầu cử Real-time</h5>
+                    </div>
+                    <div class="card-body" id="resultsContainer">
+                        <div class="text-muted text-center py-3">Chọn cuộc bầu cử để xem kết quả.</div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
