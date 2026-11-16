@@ -94,7 +94,7 @@ const CONTRACT_ABI = [
 		"outputs": [
 			{ "internalType": "address", "name": "", "type": "address" }
 		],
-        "stateMutability": "view",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -198,7 +198,7 @@ let userAddress = null;
 let electionsData = [];
 
 // =========================================================================
-// 1. KẾT NỐI VÍ METAMASK
+// 1. KẾT NỐI VÍ METAMASK & KIỂM TRA QUYỀN ADMIN
 // =========================================================================
 async function connectWallet() {
     if (typeof window.ethereum === "undefined") {
@@ -232,6 +232,18 @@ async function connectWallet() {
         document.getElementById("walletInfo").textContent = `Địa chỉ cử tri: ${userAddress}`;
 
         votingContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+        // Kiểm tra ví hiện tại có trùng với địa chỉ admin() trong Smart Contract không
+        const contractAdmin = await votingContract.admin();
+        const adminPanel = document.getElementById("adminPanel");
+        if (adminPanel) {
+            if (userAddress.toLowerCase() === contractAdmin.toLowerCase()) {
+                adminPanel.classList.remove("d-none");
+            } else {
+                adminPanel.classList.add("d-none");
+            }
+        }
+
         await loadElections();
     } catch (error) {
         console.error("Lỗi kết nối MetaMask:", error);
@@ -334,6 +346,14 @@ function populateElectionSelect() {
     selectElectionEl.innerHTML = electionsData.map((el) => `
         <option value="${el.id}">#${el.id} - ${el.title}</option>
     `).join("");
+
+    const adminSelectEl = document.getElementById("adminSelectElection");
+    if (adminSelectEl) {
+        const activeElections = electionsData.filter((el) => el.isActive);
+        adminSelectEl.innerHTML = activeElections.length > 0
+            ? activeElections.map((el) => `<option value="${el.id}">#${el.id} - ${el.title}</option>`).join("")
+            : `<option value="">-- Không có cuộc bầu cử đang mở --</option>`;
+    }
 }
 
 // =========================================================================
@@ -407,7 +427,7 @@ function renderResults(election) {
                 </div>
                 <div class="progress" style="height: 20px;">
                     <div class="progress-bar bg-success progress-bar-striped" role="progressbar"
-                    style="width: ${percent}%;" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
+                        style="width: ${percent}%;" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
                         ${percent}%
                     </div>
                 </div>
@@ -460,6 +480,70 @@ async function handleVote(event) {
         alert("Bỏ phiếu thất bại: " + (error.reason || error.shortMessage || error.message));
         btnVote.disabled = false;
         btnVote.textContent = "Xác nhận bỏ phiếu";
+    }
+}
+
+// =========================================================================
+// 5. CHỨC NĂNG QUẢN TRỊ VIÊN (CHỈ ADMIN MỚI GỌI ĐƯỢC TRÊN SMART CONTRACT)
+// =========================================================================
+async function handleCreateElection(event) {
+    event.preventDefault();
+    if (!votingContract) return alert("Vui lòng kết nối ví MetaMask!");
+
+    const title = document.getElementById("adminElectionTitle").value.trim();
+    const desc = document.getElementById("adminElectionDesc").value.trim();
+    const btn = document.getElementById("btnCreateElection");
+
+    try {
+        btn.disabled = true;
+        btn.textContent = "Đang xác nhận trên MetaMask...";
+
+        const tx = await votingContract.createElection(title, desc);
+        btn.textContent = "Đang ghi lên Blockchain...";
+        await tx.wait();
+
+        alert("Tạo cuộc bầu cử mới thành công!");
+        document.getElementById("adminElectionTitle").value = "";
+        document.getElementById("adminElectionDesc").value = "";
+        await loadElections();
+    } catch (error) {
+        console.error("Lỗi tạo cuộc bầu cử:", error);
+        alert("Thao tác thất bại: " + (error.reason || error.shortMessage || error.message));
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "+ Tạo cuộc bầu cử";
+    }
+}
+
+async function handleAddCandidate(event) {
+    event.preventDefault();
+    if (!votingContract) return alert("Vui lòng kết nối ví MetaMask!");
+
+    const electionId = Number(document.getElementById("adminSelectElection").value);
+    const name = document.getElementById("adminCandidateName").value.trim();
+    const desc = document.getElementById("adminCandidateDesc").value.trim();
+    const btn = document.getElementById("btnAddCandidate");
+
+    if (!electionId) return alert("Vui lòng chọn cuộc bầu cử!");
+
+    try {
+        btn.disabled = true;
+        btn.textContent = "Đang xác nhận trên MetaMask...";
+
+        const tx = await votingContract.addCandidate(electionId, name, desc);
+        btn.textContent = "Đang ghi lên Blockchain...";
+        await tx.wait();
+
+        alert(`Đã thêm ứng viên "${name}" thành công!`);
+        document.getElementById("adminCandidateName").value = "";
+        document.getElementById("adminCandidateDesc").value = "";
+        await loadElections();
+    } catch (error) {
+        console.error("Lỗi thêm ứng viên:", error);
+        alert("Thao tác thất bại: " + (error.reason || error.shortMessage || error.message));
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "+ Thêm ứng cử viên";
     }
 }
 
