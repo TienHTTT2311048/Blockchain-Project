@@ -229,7 +229,7 @@ async function connectWallet() {
         btnConnect.textContent = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
         btnConnect.className = "btn btn-light btn-sm fw-semibold";
 
-        document.getElementById("walletInfo").textContent = `Ví đang kết nối: ${userAddress}`;
+        document.getElementById("walletInfo").textContent = `Địa chỉ cử tri: ${userAddress}`;
 
         votingContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
         await loadElections();
