@@ -35,6 +35,69 @@
 
     <!-- Nội dung chính -->
     <main class="container mb-5">
+
+        <!-- =============================================================== -->
+        <!-- KHUNG QUẢN TRỊ ADMIN (TỰ ĐỘNG HIỆN KHI VÍ TRÙNG VỚI ADMIN())     -->
+        <!-- =============================================================== -->
+        <div id="adminPanel" class="card border-warning shadow-sm mb-4 d-none">
+            <div class="card-header bg-warning text-dark fw-bold d-flex justify-content-between align-items-center">
+                <span>🛡️ Bảng điều khiển Quản trị viên (Chỉ Admin)</span>
+                <span class="badge bg-dark">Đã xác thực quyền Admin</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- Form 1: Tạo cuộc bầu cử mới -->
+                    <div class="col-md-6 border-end">
+                        <h6 class="fw-bold text-dark mb-3">1. Tạo cuộc bầu cử mới</h6>
+                        <form onsubmit="handleCreateElection(event)">
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Tên cuộc bầu cử</label>
+                                <input type="text" id="adminElectionTitle" class="form-control form-control-sm"
+                                    placeholder="VD: Bầu cử Ban Cán Sự Lớp 2026" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Mô tả chi tiết</label>
+                                <input type="text" id="adminElectionDesc" class="form-control form-control-sm"
+                                    placeholder="VD: Mỗi sinh viên chỉ được bỏ phiếu 1 lần" required>
+                            </div>
+                            <button type="submit" id="btnCreateElection" class="btn btn-warning btn-sm fw-bold w-100">
+                                + Tạo cuộc bầu cử
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Form 2: Thêm ứng cử viên -->
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-dark mb-3">2. Thêm ứng cử viên vào cuộc bầu cử</h6>
+                        <form onsubmit="handleAddCandidate(event)">
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Chọn cuộc bầu cử đang mở</label>
+                                <select id="adminSelectElection" class="form-select form-select-sm" required>
+                                    <option value="">-- Đang tải danh sách --</option>
+                                </select>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-5">
+                                    <label class="form-label small fw-semibold">Họ tên ứng viên</label>
+                                    <input type="text" id="adminCandidateName" class="form-control form-control-sm"
+                                        placeholder="VD: Nguyễn Văn A" required>
+                                </div>
+                                <div class="col-7">
+                                    <label class="form-label small fw-semibold">Thông tin / Vị trí</label>
+                                    <input type="text" id="adminCandidateDesc" class="form-control form-control-sm"
+                                        placeholder="VD: Ứng cử viên Lớp trưởng" required>
+                                </div>
+                            </div>
+                            <button type="submit" id="btnAddCandidate" class="btn btn-dark btn-sm fw-bold w-100">
+                                + Thêm ứng cử viên
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- =============================================================== -->
+
         <div class="row g-4">
             
             <!-- 1. Danh sách Cuộc bầu cử & Ứng viên -->
