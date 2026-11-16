@@ -1,80 +1,201 @@
 // =========================================================================
-// CẤU HÌNH SMART CONTRACT ĐÃ DEPLOY TRÊN SEPOLIA
+// CẤU HÌNH SMART CONTRACT CHÍNH THỨC ĐÃ DEPLOY TRÊN SEPOLIA
 // =========================================================================
-const CONTRACT_ADDRESS = "0x5D6F0452b485603E99a86Be797D39196C86a26FB";
+const CONTRACT_ADDRESS = "0x0d7d2aac7b8290E7a2c37752C84A8673553847C9";
 
 const CONTRACT_ABI = [
-    {
-        "inputs": [],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
-    {
-        "inputs": [],
-        "name": "getAllElections",
-        "outputs": [
-            {
-                "components": [
-                    { "internalType": "uint256", "name": "id", "type": "uint256" },
-                    { "internalType": "string", "name": "title", "type": "string" },
-                    { "internalType": "string", "name": "description", "type": "string" },
-                    { "internalType": "bool", "name": "isActive", "type": "bool" },
-                    { "internalType": "uint256", "name": "candidateCount", "type": "uint256" }
-                ],
-                "internalType": "struct DVoting.Election[]",
-                "name": "",
-                "type": "tuple[]"
-            }
-        ],
+	{
+		"inputs": [
+			{ "internalType": "uint256", "name": "_electionId", "type": "uint256" },
+			{ "internalType": "string", "name": "_name", "type": "string" },
+			{ "internalType": "string", "name": "_description", "type": "string" }
+		],
+		"name": "addCandidate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{ "indexed": true, "internalType": "uint256", "name": "electionId", "type": "uint256" },
+			{ "indexed": true, "internalType": "uint256", "name": "candidateId", "type": "uint256" },
+			{ "indexed": false, "internalType": "string", "name": "name", "type": "string" }
+		],
+		"name": "CandidateAdded",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{ "internalType": "string", "name": "_title", "type": "string" },
+			{ "internalType": "string", "name": "_description", "type": "string" }
+		],
+		"name": "createElection",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{ "indexed": true, "internalType": "uint256", "name": "electionId", "type": "uint256" },
+			{ "indexed": false, "internalType": "string", "name": "title", "type": "string" }
+		],
+		"name": "ElectionCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{ "indexed": true, "internalType": "uint256", "name": "electionId", "type": "uint256" },
+			{ "indexed": false, "internalType": "bool", "name": "isActive", "type": "bool" }
+		],
+		"name": "ElectionStatusChanged",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{ "internalType": "uint256", "name": "_electionId", "type": "uint256" },
+			{ "internalType": "bool", "name": "_isActive", "type": "bool" }
+		],
+		"name": "setElectionStatus",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{ "internalType": "uint256", "name": "_electionId", "type": "uint256" },
+			{ "internalType": "uint256", "name": "_candidateId", "type": "uint256" }
+		],
+		"name": "vote",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{ "indexed": true, "internalType": "uint256", "name": "electionId", "type": "uint256" },
+			{ "indexed": true, "internalType": "uint256", "name": "candidateId", "type": "uint256" },
+			{ "indexed": true, "internalType": "address", "name": "voter", "type": "address" }
+		],
+		"name": "Voted",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "admin",
+		"outputs": [
+			{ "internalType": "address", "name": "", "type": "address" }
+		],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [{ "internalType": "uint256", "name": "_electionId", "type": "uint256" }],
-        "name": "getCandidates",
-        "outputs": [
-            {
-                "components": [
-                    { "internalType": "uint256", "name": "id", "type": "uint256" },
-                    { "internalType": "string", "name": "name", "type": "string" },
-                    { "internalType": "string", "name": "description", "type": "string" },
-                    { "internalType": "uint256", "name": "voteCount", "type": "uint256" }
-                ],
-                "internalType": "struct DVoting.Candidate[]",
-                "name": "",
-                "type": "tuple[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            { "internalType": "uint256", "name": "", "type": "uint256" },
-            { "internalType": "address", "name": "", "type": "address" }
-        ],
-        "name": "hasVoted",
-        "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            { "internalType": "uint256", "name": "_electionId", "type": "uint256" },
-            { "internalType": "uint256", "name": "_candidateId", "type": "uint256" }
-        ],
-        "name": "vote",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    }
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{ "internalType": "uint256", "name": "", "type": "uint256" },
+			{ "internalType": "uint256", "name": "", "type": "uint256" }
+		],
+		"name": "candidates",
+		"outputs": [
+			{ "internalType": "uint256", "name": "id", "type": "uint256" },
+			{ "internalType": "string", "name": "name", "type": "string" },
+			{ "internalType": "string", "name": "description", "type": "string" },
+			{ "internalType": "uint256", "name": "voteCount", "type": "uint256" }
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "electionCount",
+		"outputs": [
+			{ "internalType": "uint256", "name": "", "type": "uint256" }
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{ "internalType": "uint256", "name": "", "type": "uint256" }
+		],
+		"name": "elections",
+		"outputs": [
+			{ "internalType": "uint256", "name": "id", "type": "uint256" },
+			{ "internalType": "string", "name": "title", "type": "string" },
+			{ "internalType": "string", "name": "description", "type": "string" },
+			{ "internalType": "bool", "name": "isActive", "type": "bool" },
+			{ "internalType": "uint256", "name": "candidateCount", "type": "uint256" }
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAllElections",
+		"outputs": [
+			{
+				"components": [
+					{ "internalType": "uint256", "name": "id", "type": "uint256" },
+					{ "internalType": "string", "name": "title", "type": "string" },
+					{ "internalType": "string", "name": "description", "type": "string" },
+					{ "internalType": "bool", "name": "isActive", "type": "bool" },
+					{ "internalType": "uint256", "name": "candidateCount", "type": "uint256" }
+				],
+				"internalType": "struct DVoting.Election[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{ "internalType": "uint256", "name": "_electionId", "type": "uint256" }
+		],
+		"name": "getCandidates",
+		"outputs": [
+			{
+				"components": [
+					{ "internalType": "uint256", "name": "id", "type": "uint256" },
+					{ "internalType": "string", "name": "name", "type": "string" },
+					{ "internalType": "string", "name": "description", "type": "string" },
+					{ "internalType": "uint256", "name": "voteCount", "type": "uint256" }
+				],
+				"internalType": "struct DVoting.Candidate[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{ "internalType": "uint256", "name": "", "type": "uint256" },
+			{ "internalType": "address", "name": "", "type": "address" }
+		],
+		"name": "hasVoted",
+		"outputs": [
+			{ "internalType": "bool", "name": "", "type": "bool" }
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
 ];
 
 let provider = null;
 let signer = null;
 let votingContract = null;
 let userAddress = null;
-let electionsData = []; // Lưu danh sách cuộc bầu cử kèm ứng viên
+let electionsData = [];
 
 // =========================================================================
 // 1. KẾT NỐI VÍ METAMASK
@@ -142,7 +263,6 @@ async function loadElections() {
             return;
         }
 
-        // Lấy kèm danh sách ứng viên của từng cuộc bầu cử
         for (let i = 0; i < rawElections.length; i++) {
             const el = rawElections[i];
             const id = Number(el.id);
@@ -173,7 +293,6 @@ async function loadElections() {
     }
 }
 
-// Hiển thị danh sách cuộc bầu cử & ứng viên ở cột bên trái
 function renderElectionsList() {
     const electionsListEl = document.getElementById("electionsList");
 
@@ -210,7 +329,6 @@ function renderElectionsList() {
     }).join("");
 }
 
-// Đổ dữ liệu vào dropdown "Chọn cuộc bầu cử"
 function populateElectionSelect() {
     const selectElectionEl = document.getElementById("selectElection");
     selectElectionEl.innerHTML = electionsData.map((el) => `
@@ -235,7 +353,6 @@ async function onElectionSelectChange() {
         return;
     }
 
-    // Đổ danh sách ứng viên vào dropdown chọn ứng viên
     if (election.candidates.length === 0) {
         selectCandidateEl.innerHTML = `<option value="">-- Chưa có ứng viên --</option>`;
     } else {
@@ -244,7 +361,6 @@ async function onElectionSelectChange() {
         `).join("");
     }
 
-    // Kiểm tra ví hiện tại đã bỏ phiếu cho cuộc bầu cử này chưa
     try {
         const voted = await votingContract.hasVoted(electionId, userAddress);
         if (!election.isActive) {
@@ -271,7 +387,6 @@ async function onElectionSelectChange() {
     renderResults(election);
 }
 
-// Hiển thị biểu đồ thanh tiến trình kết quả bỏ phiếu
 function renderResults(election) {
     const resultsContainer = document.getElementById("resultsContainer");
 
@@ -292,7 +407,7 @@ function renderResults(election) {
                 </div>
                 <div class="progress" style="height: 20px;">
                     <div class="progress-bar bg-success progress-bar-striped" role="progressbar"
-                        style="width: ${percent}%;" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
+                    style="width: ${percent}%;" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
                         ${percent}%
                     </div>
                 </div>
@@ -339,7 +454,6 @@ async function handleVote(event) {
         await tx.wait();
         alert("Bỏ phiếu thành công! Dữ liệu đã được lưu trên Blockchain.");
 
-        // Tải lại dữ liệu mới nhất từ Smart Contract
         await loadElections();
     } catch (error) {
         console.error("Lỗi khi bỏ phiếu:", error);
@@ -349,7 +463,6 @@ async function handleVote(event) {
     }
 }
 
-// Tự động cập nhật khi người dùng đổi tài khoản hoặc đổi mạng trên MetaMask
 if (window.ethereum) {
     window.ethereum.on("accountsChanged", () => {
         connectWallet();
