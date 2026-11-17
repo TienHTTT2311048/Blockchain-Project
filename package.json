@@ -1,0 +1,29 @@
+{
+  "name": "blockchain-project",
+  "version": "1.0.0",
+  "description": "D-Voting là hệ thống bỏ phiếu điện tử ứng dụng công nghệ Blockchain và Smart Contract nhằm hỗ trợ quá trình tổ chức, quản lý và kiểm tra kết quả bỏ phiếu.",
+  "main": "load-env.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node load-env.js && npx http-server frontend -p 5500",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TienHTTT2311048/Blockchain-Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/TienHTTT2311048/Blockchain-Project/issues"
+  },
+  "homepage": "https://github.com/TienHTTT2311048/Blockchain-Project#readme",
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "http-server": "^14.1.1"
+  }
+}
