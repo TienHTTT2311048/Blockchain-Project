@@ -94,6 +94,29 @@
                         </form>
                     </div>
                 </div>
+
+                <!-- Form 3: Khóa / Mở cuộc bầu cử -->
+                <div class="border-top pt-3 mt-4">
+                    <h6 class="fw-bold text-dark mb-2">3. Quản lý trạng thái (Khóa / Mở cuộc bầu cử)</h6>
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold mb-1">Chọn cuộc bầu cử</label>
+                            <select id="adminToggleSelectElection" class="form-select form-select-sm">
+                                <option value="">-- Đang tải danh sách --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" id="btnLockElection" onclick="handleToggleElectionStatus(false)" class="btn btn-danger btn-sm w-100 fw-semibold">
+                                🔒 Khóa bình chọn
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" id="btnUnlockElection" onclick="handleToggleElectionStatus(true)" class="btn btn-outline-success btn-sm w-100 fw-semibold">
+                                🔓 Mở lại bình chọn
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- =============================================================== -->
@@ -150,7 +173,8 @@
 
         </div>
     </main>
-<script src="config.js"></script>
+
+    <script src="config.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

@@ -338,7 +338,7 @@ function renderElectionsList() {
         return `
             <div class="border rounded p-3 mb-3 bg-light">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="fw-bold text-primary mb-0">#${el.id} ${el.title}</h6>
+                    <h6 class="fw-bold text-primary mb-0">#${el.id} ${el.title}</h6>
                     ${statusBadge}
                 </div>
                 <p class="text-muted small mb-3">${el.description}</p>
@@ -363,6 +363,13 @@ function populateElectionSelect() {
         adminSelectEl.innerHTML = activeElections.length > 0
             ? activeElections.map((el) => `<option value="${el.id}">#${el.id} ${el.title}</option>`).join("")
             : `<option value="">-- Không có cuộc bầu cử đang mở --</option>`;
+    }
+
+    const adminToggleSelectEl = document.getElementById("adminToggleSelectElection");
+    if (adminToggleSelectEl) {
+        adminToggleSelectEl.innerHTML = electionsData.length > 0
+            ? electionsData.map((el) => `<option value="${el.id}">#${el.id} ${el.title} (${el.isActive ? "Đang mở" : "Đã khóa"})</option>`).join("")
+            : `<option value="">-- Không có cuộc bầu cử --</option>`;
     }
 }
 
@@ -555,6 +562,46 @@ async function handleAddCandidate(event) {
         btn.textContent = "+ Thêm ứng cử viên";
     }
 }
+
+async function handleToggleElectionStatus(isActive) {
+    if (!votingContract) return alert("Vui lòng kết nối ví MetaMask!");
+
+    const electionId = Number(document.getElementById("adminToggleSelectElection").value);
+    if (!electionId) return alert("Vui lòng chọn cuộc bầu cử!");
+
+    const election = electionsData.find((e) => e.id === electionId);
+    if (election && election.isActive === isActive) {
+        return alert(isActive ? "Cuộc bầu cử này đang mở sẵn rồi!" : "Cuộc bầu cử này đã bị khóa sẵn rồi!");
+    }
+
+    const btnLock = document.getElementById("btnLockElection");
+    const btnUnlock = document.getElementById("btnUnlockElection");
+
+    try {
+        btnLock.disabled = true;
+        btnUnlock.disabled = true;
+        if (isActive) {
+            btnUnlock.textContent = "Đang xử lý...";
+        } else {
+            btnLock.textContent = "Đang xử lý...";
+        }
+
+        const tx = await votingContract.setElectionStatus(electionId, isActive);
+        await tx.wait();
+
+        alert(isActive ? `Đã mở lại cuộc bầu cử #${electionId}!` : `Đã khóa cuộc bầu cử #${electionId}!`);
+        await loadElections();
+    } catch (error) {
+        console.error("Lỗi thay đổi trạng thái cuộc bầu cử:", error);
+        alert("Thao tác thất bại: " + (error.reason || error.shortMessage || error.message));
+    } finally {
+        btnLock.disabled = false;
+        btnUnlock.disabled = false;
+        btnLock.textContent = "🔒 Khóa bình chọn";
+        btnUnlock.textContent = "🔓 Mở lại bình chọn";
+    }
+}
+
 if (window.ethereum) {
     window.ethereum.on("accountsChanged", () => {
         connectWallet();
