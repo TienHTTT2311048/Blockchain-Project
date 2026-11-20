@@ -15,11 +15,26 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">🗳️ Bỏ Phiếu Trực Tuyến D-Voting</a>
-            <div class="d-flex align-items-center">
-                <span id="networkBadge" class="badge bg-secondary me-2">Chưa kết nối</span>
-                <button id="btnConnect" class="btn btn-outline-light btn-sm" onclick="connectWallet()">
-                    Kết nối MetaMask
+            <div class="d-flex align-items-center gap-2">
+                <span id="networkBadge" class="badge bg-secondary">Chưa kết nối</span>
+                
+                <!-- Nút Đăng nhập (Hiện khi chưa kết nối ví) -->
+                <button id="btnConnect" class="btn btn-outline-light btn-sm fw-semibold" onclick="connectWallet()">
+                    🔑 Đăng nhập (Kết nối ví)
                 </button>
+
+                <!-- Nhóm hiển thị Ví, Đổi ví & Đăng xuất (Hiện sau khi đăng nhập thành công) -->
+                <div id="userAccountGroup" class="d-none align-items-center gap-2">
+                    <span id="walletBadge" class="badge bg-light text-dark font-monospace py-2 px-2">
+                        0x0000...0000
+                    </span>
+                    <button id="btnSwitchAccount" class="btn btn-outline-info btn-sm" onclick="switchAccount()" title="Đổi sang ví MetaMask khác">
+                        🔄 Đổi ví
+                    </button>
+                    <button id="btnDisconnect" class="btn btn-danger btn-sm fw-semibold" onclick="disconnectWallet()">
+                        🚪 Đăng xuất
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
@@ -174,7 +189,7 @@
         </div>
     </main>
 
-    <script src="config.js"></script>
-    <script src="app.js"></script>
+    <script src="config.js?v=3"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>

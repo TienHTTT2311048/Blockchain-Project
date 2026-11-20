@@ -205,9 +205,9 @@ let userAddress = null;
 let electionsData = [];
 
 // =========================================================================
-// 1. KẾT NỐI VÍ METAMASK & KIỂM TRA QUYỀN ADMIN
+// 1. ĐĂNG NHẬP (KẾT NỐI VÍ), ĐỔI VÍ & ĐĂNG XUẤT
 // =========================================================================
-async function connectWallet() {
+async function connectWallet(forceSelectAccount = false) {
     if (typeof window.ethereum === "undefined") {
         alert("Vui lòng cài đặt tiện ích MetaMask trên trình duyệt!");
         return;
@@ -215,7 +215,17 @@ async function connectWallet() {
 
     try {
         provider = new ethers.BrowserProvider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
+
+        // Nếu bấm "Đổi ví", ép MetaMask mở hộp thoại chọn tài khoản
+        if (forceSelectAccount) {
+            await window.ethereum.request({
+                method: "wallet_requestPermissions",
+                params: [{ eth_accounts: {} }]
+            });
+        } else {
+            await provider.send("eth_requestAccounts", []);
+        }
+
         signer = await provider.getSigner();
         userAddress = await signer.getAddress();
 
@@ -225,22 +235,30 @@ async function connectWallet() {
         const networkBadge = document.getElementById("networkBadge");
         if (chainId === TARGET_CHAIN_ID) {
             networkBadge.textContent = `Sepolia (Chain ID: ${TARGET_CHAIN_ID})`;
-            networkBadge.className = "badge bg-info text-dark me-2";
+            networkBadge.className = "badge bg-info text-dark";
         } else {
             networkBadge.textContent = `Sai mạng (Chain ID: ${chainId})`;
-            networkBadge.className = "badge bg-danger me-2";
+            networkBadge.className = "badge bg-danger";
             alert("Vui lòng chuyển MetaMask sang mạng thử nghiệm Sepolia!");
         }
 
-        const btnConnect = document.getElementById("btnConnect");
-        btnConnect.textContent = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-        btnConnect.className = "btn btn-light btn-sm fw-semibold";
+        // Cập nhật thanh điều hướng: Ẩn nút Đăng nhập, hiện ví + Đổi ví + Đăng xuất
+        document.getElementById("btnConnect").classList.add("d-none");
+        const accountGroup = document.getElementById("userAccountGroup");
+        if (accountGroup) {
+            accountGroup.classList.remove("d-none");
+            accountGroup.classList.add("d-flex");
+        }
+        const walletBadge = document.getElementById("walletBadge");
+        if (walletBadge) {
+            walletBadge.textContent = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+        }
 
         document.getElementById("walletInfo").textContent = `Địa chỉ cử tri: ${userAddress}`;
 
         votingContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-        // Kiểm tra ví hiện tại có trùng với địa chỉ admin() trong Smart Contract hoặc biến môi trường không
+        // Kiểm tra ví hiện tại có trùng với địa chỉ admin() trong Smart Contract và biến môi trường không
         const contractAdmin = await votingContract.admin();
         const isEnvAdmin = ADMIN_ADDRESS ? userAddress.toLowerCase() === ADMIN_ADDRESS.toLowerCase() : true;
         const isContractAdmin = userAddress.toLowerCase() === contractAdmin.toLowerCase();
@@ -259,6 +277,51 @@ async function connectWallet() {
         console.error("Lỗi kết nối MetaMask:", error);
         alert("Không thể kết nối MetaMask: " + (error.shortMessage || error.message));
     }
+}
+
+// Mở hộp thoại MetaMask để chuyển sang tài khoản ví khác
+async function switchAccount() {
+    await connectWallet(true);
+}
+
+// Đăng xuất: Xóa phiên kết nối hiện tại, ẩn bảng Admin và đưa giao diện về ban đầu
+function disconnectWallet() {
+    provider = null;
+    signer = null;
+    votingContract = null;
+    userAddress = null;
+    electionsData = [];
+
+    const networkBadge = document.getElementById("networkBadge");
+    networkBadge.textContent = "Chưa kết nối";
+    networkBadge.className = "badge bg-secondary";
+
+    document.getElementById("btnConnect").classList.remove("d-none");
+    const accountGroup = document.getElementById("userAccountGroup");
+    if (accountGroup) {
+        accountGroup.classList.add("d-none");
+        accountGroup.classList.remove("d-flex");
+    }
+
+    document.getElementById("walletInfo").textContent = "";
+
+    const adminPanel = document.getElementById("adminPanel");
+    if (adminPanel) {
+        adminPanel.classList.add("d-none");
+    }
+
+    document.getElementById("electionsList").innerHTML =
+        `<div class="text-center py-4 text-muted">Đã đăng xuất. Vui lòng bấm "Đăng nhập (Kết nối ví)" để tiếp tục...</div>`;
+    document.getElementById("selectElection").innerHTML = "";
+    document.getElementById("selectCandidate").innerHTML = "";
+
+    const btnVote = document.getElementById("btnVote");
+    btnVote.disabled = true;
+    btnVote.textContent = "Xác nhận bỏ phiếu";
+    btnVote.className = "btn btn-success w-100";
+
+    document.getElementById("resultsContainer").innerHTML =
+        `<div class="text-muted text-center py-3">Chọn cuộc bầu cử để xem kết quả.</div>`;
 }
 
 // =========================================================================
@@ -604,7 +667,9 @@ async function handleToggleElectionStatus(isActive) {
 
 if (window.ethereum) {
     window.ethereum.on("accountsChanged", () => {
-        connectWallet();
+        if (userAddress) {
+            connectWallet();
+        }
     });
     window.ethereum.on("chainChanged", () => {
         window.location.reload();
